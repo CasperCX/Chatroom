@@ -15,12 +15,22 @@ const UserSchema = mongoose.Schema({
 
 const User = module.exports = mongoose.model('User', UserSchema);
 
-module.exports.getUser = function(id, cb) {
+module.exports.getUserById = function(id, cb) {
     User.findById(id, cb);
+};
+
+module.exports.getUserByUsername = function(username, cb) {
+    User.findOne({username: username}, cb);
 };
 
 module.exports.createUser = function(newUser, cb) {
     console.log("new user created: ", newUser);
     newUser.save(cb);
 };
+
+// module.exports.comparePassword = function(candidatePassword, hash, callback){
+// 	bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+//     	callback(null, isMatch);
+// 	});
+//}
 

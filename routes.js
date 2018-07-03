@@ -1,7 +1,25 @@
-const router = require("express").Router();
+const router = require('express').Router();
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/User');
 
-
+// passport.use(new LocalStrategy(function(username, password, done){
+//     User.getUserByUsername(username, function(err, user){
+//       if(err) throw err;
+//       if(!user){
+//         return done(null, false, {message: 'Unknown User'});
+//       }
+  
+//       User.comparePassword(password, user.password, function(err, isMatch){
+//         if(err) return done(err);
+//         if(isMatch){
+//           return done(null, user);
+//         } else {
+//           return done(null, false, {message:'Invalid Password'});
+//         }
+//       });
+//     });
+//   }));
 
 router.get('/', (req, res) => {
     res.render('chatroom.ejs');

@@ -1,3 +1,15 @@
 <html>
-    welcome to the chatroom
+    <body>
+        <div id="container">
+            Welcome to the chatroom
+        </div>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://localhost:5000');
+            socket.on('connect', (data) => {
+                socket.emit('join', "Hello from client");
+            });
+            </script>
+    </body>
 </html>

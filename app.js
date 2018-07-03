@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const path = require('path');
 const mongoose = require('mongoose');
+const routes = require("./routes");
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 //connect to Database
 mongoose.connect(config.mongoURI); 
-
-const routes = require("./routes");
-const app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -21,7 +22,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //PASSPORT
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 //EXPRESS VALIDATOR
 app.use(expressValidator({
@@ -42,9 +42,22 @@ app.use(expressValidator({
   }));
 
 
+//Routes
 app.use('/', routes);
 
+io.sockets.on('connection', (client) => {
+    console.log('client connected');
 
-app.listen(config.port, () => {
-    console.log(`app running on port ${config.port}`);
+    //Client connecting to room
+    client.on('join', (data) => {
+        io.sockets.emit('user joined', {message: "user joined channel"});
+        console.log(console.log(data))
+    });
 });
+
+
+
+server.listen(5000, () => {
+    console.log('server running on 5000');
+});
+
