@@ -1,7 +1,18 @@
 <html>
-    <form method='POST' action='/login'>
-        <input type='text' name="username" placeholder="username" />
-        <input type='password' name="password" placeholder='password' />
-        <input type='submit' value='login' />
-    </form>
+    <body>
+        <nav>
+            <ul>
+                <% if (user) { %}
+                 <li a href="/login">Log In</li>
+                 <% } else { %>
+                <li a href="/logout">Log Out</li>
+                <% } %>
+            </ul>
+        </nav>
+        <form method='POST' action='/login'>
+            <input type='text' name="username" placeholder="username" />
+            <input type='password' name="password" placeholder='password' />
+            <input type='submit' value='login' />
+        </form>
+    </body>
 </html>
