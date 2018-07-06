@@ -10,6 +10,10 @@ const UserSchema = mongoose.Schema({
     },
     password: {
         type: String
+    },
+    googleid: {
+        type: String,
+        default: null
     }
 });
 
@@ -17,6 +21,10 @@ const User = module.exports = mongoose.model('User', UserSchema);
 
 module.exports.getUserById = function(id, cb) {
     User.findById(id, cb);
+};
+
+module.exports.findByGoogleId = function(profileid, cb) {
+    User.findOne({googleid: prodileid}, cb);
 };
 
 module.exports.getUserByUsername = function(username, cb) {
