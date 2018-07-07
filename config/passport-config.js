@@ -1,6 +1,8 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20');
+const LocalStrategy = require('passport-local').Strategy;
 const keys = require('./config');
+const User = require('../models/User');
 
 //To be passed into a cookie
 passport.serializeUser((user, done) => {
@@ -18,6 +20,27 @@ passport.deserializeUser((id, done) => {
 });
 
 passport.use(
+    new LocalStrategy(function(username, password, done){
+        User.findUserByUsername(username, (err, user) => {
+            if(err) throw err;
+            if (!user){
+                return done(null, false, {message: "no user found"})
+            }
+
+            console.log("user found", user);
+            User.comparePassword(password, user.password, (err, isMatch) => {
+                console.log(isMatch);
+                if (err) { return done(err) }
+                if (isMatch) {
+                    return done(null, user)
+                } else {
+                    return done(null, false, {message: "wrong password"})
+                }
+            })
+        })
+    }));
+
+passport.use(
     new GoogleStrategy({
         callbackURL: 'auth/google/redirect',
         clientID: keys.google.clientID,
@@ -31,7 +54,7 @@ passport.use(
             return done(null, currentUser);
         })
 
-        //Create new record in db if user does not exist yet
+        //Create new local record in db if user does not exist yet
         new User({
             username: profile.displayName,
             googleid: profile.id

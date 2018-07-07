@@ -1,5 +1,14 @@
 <html>
     <body>
+            <nav>
+                <ul>   
+                    <% if (user) { %>
+                        <li><a href="/logout">Log out</a></li>
+                        <% } else { %>
+                        <li><a href="/login">Login</a></li>
+                    <% } %>
+                </ul>
+            </nav>
         <div id="container">
             Welcome to the chatroom
         </div>

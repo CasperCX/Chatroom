@@ -4,7 +4,7 @@ const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
-const passportSetup = require('/config/passport-config');
+const passportSetup = require('./config/passport-config');
 const path = require('path');
 const mongoose = require('mongoose');
 const routes = require("./routes");
@@ -19,6 +19,7 @@ mongoose.connect(config.mongoURI);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// app.use(express.session({ secret: 'your secret key' }));
 //Create cookies
 app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000,
@@ -52,6 +53,11 @@ app.use(expressValidator({
     }
   }));
 
+//Set locals
+// app.use((req, res, next) => {
+//   res.locals.user = req.user || null
+//   next();
+// });
 
 //Route handling
 app.use('/', routes);

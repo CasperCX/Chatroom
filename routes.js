@@ -11,17 +11,28 @@ const ensureAuthenticated = (req, res, next) => {
     }
 };
 
+
 router.get('/', ensureAuthenticated, (req, res) => {
     res.render('chatroom.ejs', {user: req.user});
 });
 
 router.get('/login', (req, res) => {
-    res.render('login.ejs');
+    if (req.user) return res.redirect('/');
+    res.render('login.ejs', {user: req.user});
 });
+
+router.post('/login', passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login'
+    }));
 
 router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
+});
+
+router.get('/register', (req, res) => {
+    res.render('register.ejs', {user: req.user});
 });
 
 router.post('/register', (req, res) => {
@@ -37,7 +48,7 @@ router.post('/register', (req, res) => {
     } else {
         const newUser = new User({
             username: username,
-            password: password
+            password: User.hashPassword(password)
         });
 
         User.createUser(newUser, (err, user) => {
@@ -50,10 +61,7 @@ router.post('/register', (req, res) => {
     }
 });
 
-//TODO ADD LOGIN FUNCTIONALITY (PASSPORT LOCAL STrategy)
-router.post('/login', (req, res) => {
-    res.redirect('/');
-});
+
 
 router.get('auth/google', passport.authenticate('google', {
     scope: ['profile']

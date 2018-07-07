@@ -1,8 +1,8 @@
 <html>
     <body>
+            REGISTER
         <nav>
             <ul>
-          
                 <% if (user) { %>
                     <li><a href="/logout">Log out</a></li>
                     <% } else { %>
@@ -10,7 +10,7 @@
                 <% } %>
             </ul>
         </nav>
-        <form method='POST' action='/login'>
+        <form method='POST' action='/register'>
             <input type='text' name="username" placeholder="username" />
             <input type='password' name="password" placeholder='password' />
             <input type='submit' value='login' />
