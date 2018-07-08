@@ -27,7 +27,6 @@ passport.use(
                 return done(null, false, {message: "no user found"})
             }
 
-            console.log("user found", user);
             User.comparePassword(password, user.password, (err, isMatch) => {
                 console.log(isMatch);
                 if (err) { return done(err) }

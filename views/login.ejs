@@ -2,11 +2,12 @@
     <body>
         <nav>
             <ul>
-          
+                
                 <% if (user) { %>
                     <li><a href="/logout">Log out</a></li>
                     <% } else { %>
                     <li><a href="/login">Login</a></li>
+                    <li><a href="auth/google">Login With Google</a></li>
                 <% } %>
             </ul>
         </nav>

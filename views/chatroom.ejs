@@ -1,24 +1,71 @@
 <html>
     <body>
-            <nav>
-                <ul>   
-                    <% if (user) { %>
-                        <li><a href="/logout">Log out</a></li>
-                        <% } else { %>
-                        <li><a href="/login">Login</a></li>
-                    <% } %>
-                </ul>
-            </nav>
-        <div id="container">
-            Welcome to the chatroom
+        <nav>
+            <ul>   
+                <% if (user) { %>
+                    <li><a href="/logout">Log out</a></li>
+                    <% } else { %>
+                    <li><a href="/login">Login</a></li>
+                <% } %>
+            </ul>
+        </nav>
+        <div id="chat-container">
+            <div id="chatWrap">
+                <div id="chatWindow">
+                    <form id="messageForm">
+                        <input type="text" size="22" id="message" placeholder="say something">
+                        <input type="submit" value="submit">
+                    </form>
+                </div>
+            </div>
         </div>
+        <div id="users">Users:</div>
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io.connect('http://localhost:5000');
-            socket.on('connect', (data) => {
-                socket.emit('join', "Hello from client");
+           
+            const socket = io.connect('http://localhost:5000');
+            const $messageForm = $('#messageForm');
+            const $users = $('#users');
+            const $message = $('#message');
+            const $chat = $('#chatWindow');
+            let username;
+
+            $messageForm.submit((e) => {
+                e.preventDefault();
+                socket.emit('message', $message.val());
+                $message.val('');
             });
+
+            socket.on('users', (data) => {
+                let html = '';
+                data.forEach(user => {
+                    html += user + '<br>'
+                });
+                $users.html(html);
+            });
+
+
+            socket.on('connect', (data) => {
+                $.getJSON('http://localhost:5000/api/user', (user) => {
+                    if (user.hasOwnProperty('username')) {
+                        username = user.username;
+                        socket.emit('join', user.username);
+                    }
+                });
+            });
+
+            socket.on('user joined', (data) => {
+                $chat.append(data.message + '<br>');
+            });
+            
+            socket.on('message', (data) => {
+                const d = new Date();
+                const time = d.toLocaleTimeString();
+                $chat.append(time + " " + "<b>" + username + "</b>: " + data.message + '<br>');
+            });
+            
+       
             </script>
     </body>
 </html>

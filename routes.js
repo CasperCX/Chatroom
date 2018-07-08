@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const passport = require('passport');
-//const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/User');
 
 const ensureAuthenticated = (req, res, next) => {
@@ -61,15 +60,17 @@ router.post('/register', (req, res) => {
     }
 });
 
-
+router.get('/api/user', (req, res) => {
+    res.json(req.user);
+});
 
 router.get('auth/google', passport.authenticate('google', {
     scope: ['profile']
 }));
 
-router.get('auth/google/redirect', passport.authenticate('google'),  (req, res) => {
+router.get('auth/google/redirect', passport.authenticate('google',  (req, res) => {
     res.send("signed in");
-});
+}));
 
 
 // Check if user is logged in

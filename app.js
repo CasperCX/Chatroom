@@ -64,13 +64,35 @@ app.use('/', routes);
 
 
 //Socket.io setup
-io.sockets.on('connection', (client) => {
+var users = [];
+io.sockets.on('connect', (client) => {
     console.log('client connected');
 
     //Client connecting to room
-    client.on('join', (data) => {
-        io.sockets.emit('user joined', {message: "user joined channel"});
-        console.log(console.log(data))
+    client.on('join', (user) => {
+        io.sockets.emit('user joined', {message: `${user} joined channel`});
+        console.log("joined:", user);
+        if(users.indexOf(user) != -1) {
+          updateUsers();
+        } else {
+          client.username = user;
+          users.push(user);
+          console.log("current users:", users);
+          updateUsers();
+        }
+    });
+
+    function updateUsers() {
+      io.sockets.emit('users', users);
+    };
+
+    client.on('message', (data) => {
+      io.sockets.emit('message', {message: data})
+    });
+
+    client.on('disconnect', (data) => {
+      users.splice(users.indexOf(client.username), 1);
+      console.log("user disconnected", users);
     });
 });
 
