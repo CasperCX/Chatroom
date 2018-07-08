@@ -33,7 +33,7 @@
 
             $messageForm.submit((e) => {
                 e.preventDefault();
-                socket.emit('message', $message.val());
+                socket.emit('message', {message: $message.val(), user: username});
                 $message.val('');
             });
 
@@ -62,9 +62,12 @@
             socket.on('message', (data) => {
                 const d = new Date();
                 const time = d.toLocaleTimeString();
-                $chat.append(time + " " + "<b>" + username + "</b>: " + data.message + '<br>');
+                $chat.append(time + " " + "<b>" + data.user + "</b>: " + data.message + '<br>');
             });
             
+            socket.on('disconnect', (data) => {
+                $chat.append("<b>" + data.user + "</b> left channel");
+            });
        
             </script>
     </body>
