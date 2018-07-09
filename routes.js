@@ -37,9 +37,11 @@ router.get('/register', (req, res) => {
 router.post('/register', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const email = req.body.email;
     
     req.checkBody('username', 'Username field is required').notEmpty();
     req.checkBody('password', 'Password field is required').notEmpty();
+    req.checkBody('email', 'Email field is required').notEmpty();
     const errors = req.validationErrors();
 
     if(errors) {
@@ -47,7 +49,8 @@ router.post('/register', (req, res) => {
     } else {
         const newUser = new User({
             username: username,
-            password: User.hashPassword(password)
+            password: User.hashPassword(password),
+            email: email
         });
 
         User.createUser(newUser, (err, user) => {
@@ -69,9 +72,37 @@ router.get('/api/user', (req, res) => {
     res.json(req.user);
 });
 
+//Send email to user with forgotten password
 router.post('/forgotpassword', (req, res) => {
-    console.log(req.body.username);
-    res.redirect('/login');
+    if (!req.body.username) {
+        res.redirect('/login', {error: "No username provided"});
+    }
+    User.findUserByUsername(req.body.username, (err, user) => {
+        if (err) {
+            res.redirect('/login', {error: "Username not found"});
+        }
+
+        const apiKey = 'key-429d28225ef737032e7aaab8a371fc90-8b7bf2f1-58893a51';
+        const domain = 'sandbox4cb80f3ac23845af880da930732308fe.mailgun.org';
+        const mailgun = require('mailgun-js')({apiKey: apiKey, domain: domain});
+        
+        const data = {
+        from: 'Admin <postmaster@sandbox4cb80f3ac23845af880da930732308fe.mailgun.org>',
+        to: user.email,
+        subject: 'Forgotten password',
+        text: `Your requested password: ${user.password}` //Unhash password
+        };
+        console.log("trying to send email to:", user.email);
+        mailgun.messages().send(data, function (error, body) {
+            if (!error) {
+                console.log("sent email:", body);
+            } else {
+                console.log("mail not sent", error)
+            }
+        });
+
+        res.redirect('/login');
+    });
 });
 
 router.get('auth/google', passport.authenticate('google', {
