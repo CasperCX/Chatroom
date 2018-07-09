@@ -71,9 +71,7 @@ io.sockets.on('connect', (client) => {
     //Client connecting to room
     client.on('join', (user) => {
         io.sockets.emit('user joined', {message: `<b>${user}</b> joined channel`});
-        console.log("joined:", user);
         if(users.indexOf(user) != -1) {
-          console.log("user already in lobby");
           updateUsers();
         } else {
           client.username = user;
@@ -93,8 +91,8 @@ io.sockets.on('connect', (client) => {
 
     client.on('disconnect', (data) => {
       users.splice(users.indexOf(client.username), 1);
-      updateUsers();
       io.sockets.emit('disconnect', {user: client.username})
+      updateUsers();
     });
 });
 

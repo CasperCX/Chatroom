@@ -60,8 +60,18 @@ router.post('/register', (req, res) => {
     }
 });
 
+// router.get('/register/redirect', passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/login'
+// }));
+
 router.get('/api/user', (req, res) => {
     res.json(req.user);
+});
+
+router.post('/forgotpassword', (req, res) => {
+    console.log(req.body.username);
+    res.redirect('/login');
 });
 
 router.get('auth/google', passport.authenticate('google', {

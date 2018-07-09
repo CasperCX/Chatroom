@@ -2,19 +2,28 @@
     <body>
         <nav>
             <ul>
-                
                 <% if (user) { %>
                     <li><a href="/logout">Log out</a></li>
                     <% } else { %>
+                    <li><a href="/register">Register</a></li>
                     <li><a href="/login">Login</a></li>
                     <li><a href="auth/google">Login With Google</a></li>
+                    <form action="/forgotpassword" method="POST"></form>
                 <% } %>
             </ul>
         </nav>
         <form method='POST' action='/login'>
-            <input type='text' name="username" placeholder="username" />
+            <input type='text' name="username" placeholder="username" id="username" />
             <input type='password' name="password" placeholder='password' />
             <input type='submit' value='login' />
+            <span id="forgotpassword">Forgot password?</span>
         </form>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script>
+            $("#forgotpassword").click(function(){    
+                username = $("#username").val();     
+                $.post("/forgotpassword", { username: username});
+            });
+            </script>
     </body>
 </html>
