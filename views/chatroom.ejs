@@ -1,25 +1,39 @@
 <html>
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
     <body>
-        <nav>
-            <ul>   
-                <% if (user) { %>
-                    <li><a href="/logout">Log out</a></li>
-                    <% } else { %>
-                    <li><a href="/login">Login</a></li>
-                <% } %>
-            </ul>
-        </nav>
-        <div id="chat-container">
-            <div id="chatWrap">
-                <div id="chatWindow">
-                    <form id="messageForm">
-                        <input type="text" size="22" id="message" placeholder="say something">
-                        <input type="submit" value="submit">
-                    </form>
+        <nav class="navbar navbar-inverse navbar-fixed-top"> 
+            <div class="container-fluid">
+                <div class="navbar-header">
+                <a class="navbar-brand" href="#">Chat</a>
                 </div>
+                <ul class="nav navbar-nav">
+                    <% if (user) { %>
+                        <li><a href="/logout">Log out</a></li>
+                        <% } else { %>
+                        <li><a href="/login">Login</a></li>
+                    <% } %>
+                </ul>
+            </div>
+    </nav>
+    <div id="page-wrapper">
+        <div id="chat-container">
+            <div id="chat-window">
+                <form id="messageForm">
+                    <input type="text" size="22" id="message" placeholder="say something">
+                    <input type="submit" value="submit">
+                </form>
             </div>
         </div>
-        <div id="users">Users:</div>
+        <div id="channel-users-window-container">
+            <div id="channel-users-window">Users in room</div>
+            <div id="users"></div>
+        </div>
+    </div>
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script>
@@ -28,7 +42,7 @@
             const $messageForm = $('#messageForm');
             const $users = $('#users');
             const $message = $('#message');
-            const $chat = $('#chatWindow');
+            const $chat = $('#chat-window');
             let username;
 
             $messageForm.submit((e) => {

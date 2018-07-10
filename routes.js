@@ -72,51 +72,49 @@ router.get('/api/user', (req, res) => {
 
 //Send email to user with forgotten password
 router.post('/forgotpassword', (req, res) => {
-    if (!req.body.username) {
+    if (req.body.username === "") {
+        req.flash('error', 'You did not provide an email');
         res.redirect('/login');
-    }
-    User.findUserByUsername(req.body.username, (err, user) => {
-        if (err) {
-            res.redirect('/login');
-        }
-
-        nodemailer.createTestAccount((err, account) => {
-        let transporter = nodemailer.createTransport({
-            host: 'smtp.ethereal.email',
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: account.user, // generated ethereal user
-                pass: account.pass // generated ethereal password
+    } else {
+        User.findUserByUsername(req.body.username, (err, user) => {
+            if (err) {
+                res.redirect('/login');
             }
-        });
 
-        console.log(account.user)
-        console.log(account.pass)
-        // setup email data with unicode symbols
-        let mailOptions = {
-            from: '"Admin" <foo@example.com>', // sender address
-            to: user.email, // list of receivers
-            subject: 'Forgotten password ✔', // Subject line
-            text: `Your forgotten password: ${user.password}`,
-            html: '<b>Hello world?</b>' // html body
-        };
-    
-        // send mail with defined transport object
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return console.log(error);
-            }
-            console.log(`Message sent: ${info.messageId} to: ${user.email}`);
-            // Preview only available when sending through an Ethereal account
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-            // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-            // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+            nodemailer.createTestAccount((err, account) => {
+            let transporter = nodemailer.createTransport({
+                host: 'smtp.ethereal.email',
+                port: 587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+                    user: account.user, // generated ethereal user
+                    pass: account.pass // generated ethereal password
+                }
             });
-        })
+            // setup email data with unicode symbols
+            let mailOptions = {
+                from: '"Admin" <foo@example.com>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Forgotten password ✔', // Subject line
+                text: `Your forgotten password: ${user.password}`,
+                html: '<b>Hello world?</b>' // html body
+            };
+            // send mail with defined transport object
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log(`Message sent: ${info.messageId} to: ${user.email}`);
+                // Preview only available when sending through an Ethereal account
+                console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+                // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+                // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                });
+            })
+        res.redirect('/login');
     });
-    res.redirect('/login');
-});
+    
+}});
 
 
 router.get('auth/google', passport.authenticate('google', {

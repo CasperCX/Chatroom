@@ -1,23 +1,26 @@
 <html>
+    <head>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
     <body>
-        <nav>
+        <div id="form-container">
+            <p id="title">Login</p>
+            <form method='POST' action='/login'>
+                <input type='text' name="username" placeholder="username" id="username" />
+                <input type='password' name="password" placeholder='password' />
+                <input type='submit' value='login' />
+                <span id="forgotpassword">Forgot password?</span>
+            </form>
             <ul>
                 <% if (user) { %>
                     <li><a href="/logout">Log out</a></li>
                     <% } else { %>
                     <li><a href="/register">Register</a></li>
-                    <li><a href="/login">Login</a></li>
                     <li><a href="auth/google">Login With Google</a></li>
                     <form action="/forgotpassword" method="POST"></form>
                 <% } %>
             </ul>
-        </nav>
-        <form method='POST' action='/login'>
-            <input type='text' name="username" placeholder="username" id="username" />
-            <input type='password' name="password" placeholder='password' />
-            <input type='submit' value='login' />
-            <span id="forgotpassword">Forgot password?</span>
-        </form>
+        </div>
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script>
             $("#forgotpassword").click(function(){    

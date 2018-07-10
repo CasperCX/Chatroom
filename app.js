@@ -3,6 +3,8 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
+const session = require('express-session');
+const flash = require('connect-flash');
 const passport = require('passport');
 const passportSetup = require('./config/passport-config');
 const path = require('path');
@@ -19,12 +21,17 @@ mongoose.connect(config.mongoURI);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// app.use(express.session({ secret: 'your secret key' }));
+//Static content
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 //Create cookies
 app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000,
   keys: [config.session.cookieKey] 
 }));
+app.use(session({ secret: 'your secret key' }));
+app.use(flash());
 
 //Init passport with cookies
 app.use(passport.initialize());
