@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const passport = require('passport');
+const nodemailer = require('nodemailer');
+//const nodemailerConfig = require('./config/nodemailer-config');
 const User = require('./models/User');
 
 const ensureAuthenticated = (req, res, next) => {
@@ -45,7 +47,7 @@ router.post('/register', (req, res) => {
     const errors = req.validationErrors();
 
     if(errors) {
-        res.redirect('/login', { errors: errors});
+        res.redirect('/register');
     } else {
         const newUser = new User({
             username: username,
@@ -55,7 +57,7 @@ router.post('/register', (req, res) => {
 
         User.createUser(newUser, (err, user) => {
             if(err)  {
-                res.redirect('/login', {errors: err})
+                res.redirect('/register')
             }
         });
 
@@ -63,10 +65,6 @@ router.post('/register', (req, res) => {
     }
 });
 
-// router.get('/register/redirect', passport.authenticate('local', {
-//     successRedirect: '/',
-//     failureRedirect: '/login'
-// }));
 
 router.get('/api/user', (req, res) => {
     res.json(req.user);
@@ -75,35 +73,51 @@ router.get('/api/user', (req, res) => {
 //Send email to user with forgotten password
 router.post('/forgotpassword', (req, res) => {
     if (!req.body.username) {
-        res.redirect('/login', {error: "No username provided"});
+        res.redirect('/login');
     }
     User.findUserByUsername(req.body.username, (err, user) => {
         if (err) {
-            res.redirect('/login', {error: "Username not found"});
+            res.redirect('/login');
         }
 
-        const apiKey = 'key-429d28225ef737032e7aaab8a371fc90-8b7bf2f1-58893a51';
-        const domain = 'sandbox4cb80f3ac23845af880da930732308fe.mailgun.org';
-        const mailgun = require('mailgun-js')({apiKey: apiKey, domain: domain});
-        
-        const data = {
-        from: 'Admin <postmaster@sandbox4cb80f3ac23845af880da930732308fe.mailgun.org>',
-        to: user.email,
-        subject: 'Forgotten password',
-        text: `Your requested password: ${user.password}` //Unhash password
-        };
-        console.log("trying to send email to:", user.email);
-        mailgun.messages().send(data, function (error, body) {
-            if (!error) {
-                console.log("sent email:", body);
-            } else {
-                console.log("mail not sent", error)
+        nodemailer.createTestAccount((err, account) => {
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.ethereal.email',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: account.user, // generated ethereal user
+                pass: account.pass // generated ethereal password
             }
         });
 
-        res.redirect('/login');
+        console.log(account.user)
+        console.log(account.pass)
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Admin" <foo@example.com>', // sender address
+            to: user.email, // list of receivers
+            subject: 'Forgotten password ✔', // Subject line
+            text: `Your forgotten password: ${user.password}`,
+            html: '<b>Hello world?</b>' // html body
+        };
+    
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log(`Message sent: ${info.messageId} to: ${user.email}`);
+            // Preview only available when sending through an Ethereal account
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+            // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+            // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+            });
+        })
     });
+    res.redirect('/login');
 });
+
 
 router.get('auth/google', passport.authenticate('google', {
     scope: ['profile']
