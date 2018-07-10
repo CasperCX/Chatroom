@@ -1,7 +1,15 @@
 <html>
+    <head>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
     <body>
-            REGISTER
-        <nav>
+        <div id="form-container">
+            <form method='POST' action='/register'>
+                <input type='text' name="username" placeholder="username" />
+                <input type='password' name="password" placeholder='password' />
+                <input type='text' name="email" placeholder='email' />
+                <input type='submit' value='Register' />
+            </form>
             <ul>
                 <% if (user) { %>
                     <li><a href="/logout">Log out</a></li>
@@ -9,12 +17,6 @@
                     <li><a href="/login">Login With Username</a></li>
                 <% } %>
             </ul>
-        </nav>
-        <form method='POST' action='/register'>
-            <input type='text' name="username" placeholder="username" />
-            <input type='password' name="password" placeholder='password' />
-            <input type='text' name="email" placeholder='email' />
-            <input type='submit' value='Register' />
-        </form>
+        </div>
     </body>
 </html>
